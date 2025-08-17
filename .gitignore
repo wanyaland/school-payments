@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+*.log
+
+# Virtualenv
+.venv/
+env/
+*.env
+
+# Django
+*.sqlite3
+*.db
+media/
+staticfiles/
+
+# Pytest / Coverage
+.coverage
+htmlcov/
+.cache/
+.pytest_cache/
+
+# VSCode / JetBrains
+.vscode/
+.idea/
+
+# Migrations (optional, if you want to exclude auto-gen migrations initially)
+# **/migrations/*.py
+# !**/migrations/__init__.py
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Postman
+*.postman_collection.json
+*.postman_environment.json
+
+# macOS
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Docker
+*.pid
+*.sock
+docker-compose.override.yml
