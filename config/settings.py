@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -127,4 +129,11 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 WEBHOOK_TIMESTAMP_TOLERANCE = 300 
-QBO_SYNC_ENABLED = False
+
+
+QBO_SYNC_ENABLED = os.getenv("QBO_SYNC_ENABLED", "False").lower() in ("true", "1", "yes")
+QBO_CLIENT_ID = os.getenv("QBO_CLIENT_ID", default=None)
+QBO_CLIENT_SECRET = os.getenv("QBO_CLIENT_SECRET", default=None)
+QBO_REDIRECT_URI = os.getenv("QBO_REDIRECT_URI", default="http://localhost:8000/api/qbo/callback")
+QBO_WEBHOOK_SECRET = os.getenv("QBO_WEBHOOK_SECRET", default=None)
+QBO_IS_SANDBOX = os.getenv("QBO_IS_SANDBOX", "True").lower() in ("true", "1", "yes")

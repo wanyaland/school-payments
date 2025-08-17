@@ -1,24 +1,38 @@
-from __future__ import annotations
-from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Dict
-from django.utils import timezone as dj_tz
-
-@dataclass
-class QBOAuth:
-    realm_id: str
-    access_token: str
-    refresh_token: str
-    token_expires_at: datetime
+# qbo/client.py
+from django.utils import timezone
+from django.conf import settings
+from schools.models import QBOConnection
+import qbo.oauth as qbo_oauth 
+# Choose base by sandbox flag (optional for later)
+API_BASE = "https://sandbox-quickbooks.api.intuit.com" if getattr(settings, "QBO_IS_SANDBOX", True) \
+          else "https://quickbooks.api.intuit.com"
 
 class QBOClient:
-    def __init__(self, auth: QBOAuth | None = None, mapping: dict[str, Any] | None = None):
-        self.auth = auth
-        self.mapping = mapping or {}
-    def is_expired(self) -> bool:
-        return bool(self.auth and self.auth.token_expires_at <= dj_tz.now())
-    def refresh(self) -> None:
-        raise NotImplementedError
-    def create_sales_receipt(self, payment) -> Dict[str, Any]:
-        """Intentionally unimplemented; tests monkeypatch this method."""
-        raise NotImplementedError
+    def __init__(self, school):
+        self.conn: QBOConnection = school.qbo
+
+    def ensure_token(self):
+        if not self.conn:
+            return False
+        if self.conn.token_expires_at and self.conn.token_expires_at > timezone.now():
+            return True
+        data = qbo_oauth.refresh_access_token(self.conn.refresh_token)  
+        self.conn.access_token = data["access_token"]
+        self.conn.refresh_token = data.get("refresh_token", self.conn.refresh_token)
+        self.conn.token_expires_at = timezone.now() + timezone.timedelta(seconds=int(data.get("expires_in", 2500)))
+        self.conn.save(update_fields=["access_token", "refresh_token", "token_expires_at"])
+        return True
+
+    def _headers(self):
+        return {
+            "Authorization": f"Bearer {self.conn.access_token}",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        }
+
+    def find_or_create_customer(self, payment) -> dict:
+        return {"Id": getattr(payment, "qbo_customer_id", None) or "1"}
+
+    def create_sales_receipt(self, payment, customer_id: str) -> dict:
+        # Tests monkeypatch this. Keep raising by default.
+        raise NotImplementedError()

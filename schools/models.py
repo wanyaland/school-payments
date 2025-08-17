@@ -28,3 +28,12 @@ class SchoolDirectoryConnection(models.Model):
     timeout_seconds = models.IntegerField(default=10)
     # Directory resolves canonical student by provider_student_id alone
     student_by_provider_id_path = models.CharField(max_length=200, default="/students/by-provider-id/{provider_student_id}")
+
+
+class QBOConnection(models.Model):
+    school = models.OneToOneField(School, on_delete=models.CASCADE, related_name="qbo")
+    realm_id = models.CharField(max_length=32)
+    access_token = models.TextField()
+    refresh_token = models.TextField()
+    token_expires_at = models.DateTimeField()
+    company_currency = models.CharField(max_length=3, default="USD")

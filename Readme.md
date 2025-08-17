@@ -59,17 +59,16 @@ All webhook requests **must** include:
 ```bash
 BASE_URL="http://localhost:8000"
 PROVIDER="SUREPAY"
-SCHOOL_CODE="SCHEMA-HS"
+SCHOOL_CODE="ng"
 WEBHOOK_SECRET="sekret"
 
 PAYLOAD='{
   "event_id": "evt-001",
   "external_txn_id": "txn-123",
-  "amount": "100.50",
+  "amount": "100,000",
   "currency": "UGX",
   "status": "SUCCEEDED",
-  "provider_student_id": "prov-001",
-  "raw": {"foo": "bar"}
+  "provider_student_id": "prov-001"
 }'
 
 SIG=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | cut -d" " -f2)

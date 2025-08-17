@@ -20,4 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/webhooks/", include("webhooks.urls")),
+    path("api/qbo/", include("qbo.urls")),
 ]
