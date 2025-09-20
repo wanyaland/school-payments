@@ -1,6 +1,7 @@
 # aggregators/schemas.py
 from decimal import Decimal
 from pydantic import BaseModel, Field, field_validator
+from payments.enums import PaymentNarration
 
 class CanonicalPaymentEvent(BaseModel):
     event_id: str = Field(min_length=1)
@@ -9,6 +10,7 @@ class CanonicalPaymentEvent(BaseModel):
     amount: Decimal
     currency: str = Field(min_length=3, max_length=3)
     status: str
+    narration: PaymentNarration = Field(default=PaymentNarration.OTHER)
     raw: dict
 
     @field_validator("amount")

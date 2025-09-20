@@ -1,0 +1,104 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - release/*
+  pull_request:
+    branches:
+      - main
+      - dev
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: school-payments
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Run tests
+      run: |
+        python manage.py test
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Set image tag
+      id: set-tag
+      run: |
+        if [[ $GITHUB_REF == refs/heads/main ]]; then
+          TAG="v$(date +%Y.%m.%d)-${GITHUB_SHA::8}"
+        elif [[ $GITHUB_REF == refs/heads/dev ]]; then
+          TAG="dev-${GITHUB_SHA::8}"
+        elif [[ $GITHUB_REF == refs/heads/release/* ]]; then
+          BRANCH_NAME=$(echo $GITHUB_REF | sed 's|refs/heads/release/||')
+          TAG="staging-${BRANCH_NAME}-${GITHUB_SHA::8}"
+        else
+          TAG="${GITHUB_SHA::8}"
+        fi
+        echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+    - name: Build and push Docker image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ steps.set-tag.outputs.tag }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+        # Also tag as latest for dev and staging
+        if [[ $GITHUB_REF == refs/heads/dev ]]; then
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:dev-latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:dev-latest
+        elif [[ $GITHUB_REF == refs/heads/release/* ]]; then
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:staging-latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:staging-latest
+        fi
+
+    - name: Update Kustomization
+      run: |
+        if [[ $GITHUB_REF == refs/heads/dev ]]; then
+          sed -i "s/newTag: .*/newTag: dev-${GITHUB_SHA::8}/" k8s/overlays/dev/kustomization.yaml
+        elif [[ $GITHUB_REF == refs/heads/release/* ]]; then
+          sed -i "s/newTag: .*/newTag: staging-${BRANCH_NAME}-${GITHUB_SHA::8}/" k8s/overlays/staging/kustomization.yaml
+        elif [[ $GITHUB_REF == refs/heads/main ]]; then
+          # For prod, we might want to create a git tag instead
+          echo "Prod deployment requires manual tag creation"
+        fi
+
+    - name: Commit and push kustomization changes
+      if: github.ref != 'refs/heads/main'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add k8s/overlays/*/kustomization.yaml
+        git commit -m "Update image tag for ${GITHUB_REF#refs/heads/}" || echo "No changes to commit"
+        git push

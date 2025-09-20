@@ -36,3 +36,11 @@ class QBOClient:
     def create_sales_receipt(self, payment, customer_id: str) -> dict:
         # Tests monkeypatch this. Keep raising by default.
         raise NotImplementedError()
+
+    def create_payment(self, payment, customer_id: str, invoice_id: str) -> dict:
+        # Create a payment against an invoice
+        raise NotImplementedError()
+
+    def find_open_invoices(self, customer_id: str) -> list:
+        # Return list of open invoices for customer
+        raise NotImplementedError()

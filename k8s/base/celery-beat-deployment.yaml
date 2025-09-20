@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: school-payments-celery-beat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: school-payments-celery-beat
+  template:
+    metadata:
+      labels:
+        app: school-payments-celery-beat
+    spec:
+      containers:
+      - name: celery-beat
+        image: school-payments:latest
+        envFrom:
+        - configMapRef:
+            name: school-payments-config
+        - secretRef:
+            name: school-payments-secret
+        command: ["celery", "-A", "config.celery", "beat", "-l", "info"]
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"

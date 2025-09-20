@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: school-payments-celery-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: school-payments-celery-worker
+  template:
+    metadata:
+      labels:
+        app: school-payments-celery-worker
+    spec:
+      containers:
+      - name: celery-worker
+        image: school-payments:latest
+        envFrom:
+        - configMapRef:
+            name: school-payments-config
+        - secretRef:
+            name: school-payments-secret
+        command: ["celery", "-A", "config.celery", "worker", "-l", "info"]
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: school-payments-config
+data:
+  QBO_IS_SANDBOX: "false"
+  DEBUG: "false"

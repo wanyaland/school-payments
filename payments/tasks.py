@@ -2,9 +2,11 @@ from celery import shared_task
 from django.db import transaction
 from django.utils import timezone
 from payments.models import WebhookEvent, Payment
+from payments.enums import PaymentStatus
 from aggregators.factory import get_adapter_class
 from schools.models import Student, StudentIdMap, SchoolDirectoryConnection
 from school_api.client import SchoolAPIClient
+from qbo.tasks import sync_payment_to_qbo
 
 @shared_task(bind=True)
 def process_webhook_event_task(self, event_id: int):
@@ -42,6 +44,7 @@ def process_webhook_event_task(self, event_id: int):
                 "amount": canonical["amount"],
                 "currency": canonical["currency"],
                 "status": canonical["status"],
+                "narration": canonical.get("narration", "Other"),
                 "raw": canonical["raw"],
             },
         )
@@ -49,6 +52,7 @@ def process_webhook_event_task(self, event_id: int):
             p.status = canonical["status"]
             p.amount = canonical["amount"]
             p.currency = canonical["currency"]
+            p.narration = canonical.get("narration", p.narration)
             p.raw = canonical["raw"]
             if student and not p.student:
                 p.student = student
@@ -59,3 +63,7 @@ def process_webhook_event_task(self, event_id: int):
         event.processed = True
         event.processed_at = timezone.now()
         event.save(update_fields=["processed", "processed_at"])
+
+        # Trigger QBO sync if payment succeeded
+        if p.status == PaymentStatus.SUCCEEDED.value:
+            sync_payment_to_qbo.delay(payment_id=p.id)

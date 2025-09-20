@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+  - ../../base
+
+patchesStrategicMerge:
+  - config-patch.yaml
+  - replicas-prod.yaml
+
+namespace: school-payments-prod
+
+images:
+  - name: school-payments
+    newTag: v1.0.0

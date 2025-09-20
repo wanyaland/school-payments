@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: school-payments-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/your-org/school-payments
+    targetRevision: HEAD  # Will be updated by CI/CD to specific tag
+    path: k8s/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: school-payments-prod
+  syncPolicy:
+    automated: {}  # Manual sync for production
+    syncOptions:
+      - CreateNamespace=true
