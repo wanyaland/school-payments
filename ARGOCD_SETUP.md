@@ -27,7 +27,7 @@ helm install argocd argo/argo-cd \
   --set server.service.type=LoadBalancer \
   --set server.ingress.enabled=true \
   --set server.ingress.className=nginx \
-  --set server.ingress.hosts[0]=argocd.yourdomain.com
+  --set server.ingress.hosts[0]=argocd.staging.tngsops.com
 ```
 
 ### 2. Get ArgoCD admin password
@@ -85,6 +85,10 @@ In ArgoCD UI:
 1. Go to Settings → Repositories
 2. Add repository: `https://github.com/your-org/school-payments`
 3. Connect using GitHub token or SSH key
+
+### 4. Application Routing
+
+The school-payments application is configured with an Ingress for external access at `staging.tngsops.com`. The ArgoCD UI is accessible at `argocd.staging.tngsops.com`.
 
 ## Environment-Specific Setup
 
