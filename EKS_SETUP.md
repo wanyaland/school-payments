@@ -48,7 +48,7 @@ terraform init
 # Review the plan
 terraform plan
 
-# Apply the configuration
+# Apply the configuration (creates EKS cluster, VPC, subnets, and ECR repository)
 terraform apply
 ```
 

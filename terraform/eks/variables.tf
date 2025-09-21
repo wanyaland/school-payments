@@ -88,6 +88,12 @@ variable "enable_container_insights" {
   default     = true
 }
 
+variable "ecr_repository_name" {
+  description = "Name of the ECR repository for application images"
+  type        = string
+  default     = "school-payments"
+}
+
 variable "tags" {
   description = "Additional tags for resources"
   type        = map(string)

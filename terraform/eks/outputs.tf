@@ -48,6 +48,16 @@ output "node_group_id" {
   value       = aws_eks_node_group.main.id
 }
 
+output "ecr_repository_url" {
+  description = "ECR repository URL for pushing images"
+  value       = aws_ecr_repository.app.repository_url
+}
+
+output "ecr_repository_arn" {
+  description = "ARN of the ECR repository"
+  value       = aws_ecr_repository.app.arn
+}
+
 output "kubectl_config" {
   description = "kubectl configuration command"
   value       = "aws eks update-kubeconfig --region ${var.aws_region} --name ${var.cluster_name}"

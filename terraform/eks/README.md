@@ -6,7 +6,7 @@ This Terraform configuration creates an EKS cluster with VPC, subnets, and node 
 
 - Terraform 1.5.0 or later
 - AWS CLI configured with appropriate permissions
-- Terraform Cloud account (optional, for remote execution)
+- ECR repository will be created automatically by Terraform
 
 ## Required Permissions
 
@@ -128,6 +128,7 @@ After successful deployment, the following outputs are available:
 - `cluster_name`: Cluster name for kubectl config
 - `vpc_id`: VPC ID for additional resources
 - `private_subnet_ids`: Private subnet IDs
+- `ecr_repository_url`: ECR repository URL for pushing images
 - `kubectl_config`: Command to configure kubectl
 
 ## Connecting to the Cluster
