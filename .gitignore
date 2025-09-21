@@ -50,4 +50,11 @@ logs/
 *.pid
 *.sock
 docker-compose.override.yml
+
+# Terraform
+.terraform/
+terraform.tfstate*
+terraform.tfvars
+.terraform.lock.hcl
+*.tfstate.backup
 terraform
