@@ -27,7 +27,7 @@ helm install argocd argo/argo-cd \
   --set server.service.type=LoadBalancer \
   --set server.ingress.enabled=true \
   --set server.ingress.className=nginx \
-  --set server.ingress.hosts[0]=argocd.northgreen.ac.ug
+  --set server.ingress.hosts[0]=argocd.staging.tngsops.com
 ```
 
 ### 2. Get ArgoCD admin password
@@ -88,7 +88,7 @@ In ArgoCD UI:
 
 ### 4. Application Routing
 
-The school-payments application is configured with an Ingress for external access at `northgreen.ac.ug`. The ArgoCD UI is accessible at `argocd.northgreen.ac.ug`.
+The school-payments application is configured with an Ingress for external access at `staging.tngsops.com`. The ArgoCD UI is accessible at `argocd.staging.tngsops.com`.
 
 ## Environment-Specific Setup
 

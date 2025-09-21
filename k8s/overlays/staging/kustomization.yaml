@@ -11,4 +11,4 @@ namespace: school-payments-staging
 
 images:
   - name: school-payments
-    newTag: staging-latest
+    newTag: f7757e89
