@@ -11,6 +11,10 @@ on:
       - main
       - dev
 
+permissions:
+  contents: write
+  id-token: write
+
 env:
   AWS_REGION: eu-west-1
   ECR_REPOSITORY: school-payments
@@ -102,3 +106,5 @@ jobs:
         git add k8s/overlays/*/kustomization.yaml
         git commit -m "Update image tag for ${GITHUB_REF#refs/heads/}" || echo "No changes to commit"
         git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
