@@ -12,7 +12,7 @@ on:
       - dev
 
 env:
-  AWS_REGION: us-east-1
+  AWS_REGION: eu-west-1
   ECR_REPOSITORY: school-payments
 
 jobs:

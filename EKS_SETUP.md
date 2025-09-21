@@ -1,13 +1,67 @@
 # EKS Cluster Setup for Staging
 
-This guide covers setting up an Amazon EKS cluster for the staging environment.
+This guide covers setting up an Amazon EKS cluster for the staging environment using two approaches:
+
+1. **eksctl** (Recommended for quick setup and learning)
+2. **Terraform CLI** (Recommended for production and Infrastructure as Code)
 
 ## Prerequisites
 
 - AWS CLI configured with appropriate permissions
-- eksctl installed
 - kubectl installed
 - Helm 3.x installed
+
+### For eksctl approach:
+- eksctl installed
+
+### For Terraform CLI approach:
+- Terraform 1.5.0 or later
+- AWS CLI configured with credentials
+
+## Option 1: Terraform CLI (Infrastructure as Code)
+
+### Local Setup
+
+1. **Configure AWS CLI** with your credentials:
+   ```bash
+   aws configure
+   # Enter your AWS Access Key ID, Secret Access Key, region (eu-west-1), and output format
+   ```
+
+2. **Navigate to terraform directory**:
+   ```bash
+   cd terraform/eks
+   ```
+
+3. **Copy and edit variables**:
+   ```bash
+   cp terraform.tfvars.example terraform.tfvars
+   # Edit terraform.tfvars with your specific values
+   ```
+
+### Deploy Infrastructure
+
+```bash
+# Initialize Terraform
+terraform init
+
+# Review the plan
+terraform plan
+
+# Apply the configuration
+terraform apply
+```
+
+### Benefits of Terraform CLI
+
+- **Local Control**: Full control over execution and debugging
+- **State Management**: Local state file (can be configured for remote storage)
+- **Cost Effective**: No additional cloud service costs
+- **Version Control**: State can be committed to git (not recommended for production)
+- **Flexibility**: Easy to modify and test locally
+- **Integration**: Works with existing AWS CLI and SDK configurations
+
+## Option 2: eksctl (Quick Setup)
 
 ## Cluster Creation
 
@@ -21,7 +75,7 @@ kind: ClusterConfig
 
 metadata:
   name: school-payments-staging
-  region: us-east-1
+  region: eu-west-1
   version: "1.28"
 
 vpc:
@@ -64,7 +118,7 @@ eksctl create cluster -f cluster.yaml
 
 ```bash
 # Update kubeconfig
-aws eks update-kubeconfig --region us-east-1 --name school-payments-staging
+aws eks update-kubeconfig --region eu-west-1 --name school-payments-staging
 
 # Verify connection
 kubectl get nodes
@@ -346,7 +400,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 # Create secrets for staging
 kubectl create secret generic school-payments-secret \
   --namespace=school-payments-staging \
-  --from-literal=DATABASE_URL="postgresql://admin:PASSWORD@school-payments-staging.cluster-xyz.us-east-1.rds.amazonaws.com:5432/school_payments" \
+  --from-literal=DATABASE_URL="postgresql://admin:PASSWORD@school-payments-staging.cluster-xyz.eu-west-1.rds.amazonaws.com:5432/school_payments" \
   --from-literal=SECRET_KEY="your-django-secret-key" \
   --from-literal=QBO_CLIENT_ID="your-qbo-client-id" \
   --from-literal=QBO_CLIENT_SECRET="your-qbo-client-secret" \
@@ -431,8 +485,8 @@ helm install velero vmware-tanzu/velero \
   --create-namespace \
   --set configuration.provider=aws \
   --set configuration.backupStorageLocation.bucket=school-payments-staging-backups \
-  --set configuration.backupStorageLocation.config.region=us-east-1 \
-  --set configuration.volumeSnapshotLocation.config.region=us-east-1 \
+  --set configuration.backupStorageLocation.config.region=eu-west-1 \
+  --set configuration.volumeSnapshotLocation.config.region=eu-west-1 \
   --set image.repository=velero/velero \
   --set image.tag=v1.11.0 \
   --set image.pullPolicy=IfNotPresent \

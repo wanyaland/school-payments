@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/your-org/school-payments
+    repoURL: https://github.com/wanyaland/school-payments
     targetRevision: dev
     path: k8s/overlays/dev
   destination:
