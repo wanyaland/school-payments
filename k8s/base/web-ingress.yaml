@@ -4,8 +4,13 @@ metadata:
   name: school-payments-web
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: letsencrypt-staging
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - staging.tngops.com
+    secretName: staging-tngops-com-tls
   rules:
   - host: staging.tngops.com
     http:
