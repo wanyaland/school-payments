@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: school-payments-web
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: staging-app.tngsops.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: school-payments-web
+            port:
+              number: 80

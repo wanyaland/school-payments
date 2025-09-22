@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: web
-        image: school-payments:latest
+        image: school-payments:f7757e89
         ports:
         - containerPort: 8000
         envFrom:

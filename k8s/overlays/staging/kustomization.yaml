@@ -6,6 +6,7 @@ bases:
 
 patchesStrategicMerge:
   - config-patch.yaml
+  - ingress-patch.yaml
 
 namespace: school-payments-staging
 
