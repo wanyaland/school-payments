@@ -1,12 +1,18 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-bases:
+resources:
   - ../../base
 
-patchesStrategicMerge:
-  - config-patch.yaml
-  - ingress-patch.yaml
+patches:
+  - path: config-patch.yaml
+    target:
+      kind: ConfigMap
+      name: school-payments-config
+  - path: ingress-patch.yaml
+    target:
+      kind: Ingress
+      name: school-payments-web
 
 namespace: school-payments-staging
 
