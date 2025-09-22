@@ -12,4 +12,5 @@ namespace: school-payments-staging
 
 images:
   - name: school-payments
-    newTag: f7757e89
+    newName: 594715259457.dkr.ecr.eu-west-1.amazonaws.com/school-payments
+    newTag: v2025.09.22-21775c6e
