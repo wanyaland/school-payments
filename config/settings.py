@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-pops*zkc6n6&!ik2ms&r8ucrgvd%wgp&tor1rjj$_nb4xjndyp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition

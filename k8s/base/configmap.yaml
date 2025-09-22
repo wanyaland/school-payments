@@ -4,6 +4,7 @@ metadata:
   name: school-payments-config
 data:
   DJANGO_SETTINGS_MODULE: "config.settings"
+  ALLOWED_HOSTS: "*"
   QBO_IS_SANDBOX: "true"
   QBO_SYNC_ENABLED: "true"
   CELERY_BROKER_URL: "redis://redis:6379/0"
