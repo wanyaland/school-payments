@@ -1,0 +1,30 @@
+{
+    "Changes": [
+        {
+            "Action": "CREATE",
+            "ResourceRecordSet": {
+                "Name": "staging.tngsops.com",
+                "Type": "CNAME",
+                "TTL": 300,
+                "ResourceRecords": [
+                    {
+                        "Value": "a50a1f3064c22428b9ac1fb2495ea081-496820501.eu-west-1.elb.amazonaws.com"
+                    }
+                ]
+            }
+        },
+        {
+            "Action": "CREATE", 
+            "ResourceRecordSet": {
+                "Name": "argocd.staging.tngsops.com",
+                "Type": "CNAME",
+                "TTL": 300,
+                "ResourceRecords": [
+                    {
+                        "Value": "a50a1f3064c22428b9ac1fb2495ea081-496820501.eu-west-1.elb.amazonaws.com"
+                    }
+                ]
+            }
+        }
+    ]
+}
