@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - configmap.yaml
   - secret.yaml
+  - redis-deployment.yaml
   - web-deployment.yaml
   - web-service.yaml
   - web-ingress.yaml
