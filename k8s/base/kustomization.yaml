@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - configmap.yaml
   - secret.yaml
+  - postgres-deployment.yaml
   - redis-deployment.yaml
   - web-deployment.yaml
   - web-service.yaml
